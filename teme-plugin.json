@@ -1,0 +1,711 @@
+{
+    "manifest": 1,
+    "name": "teme/seo",
+    "code": "seo",
+    "label": "Teme SEO",
+    "description": "Suggests internal links as you write, counts the links in and out of each item, marks cornerstone items, audits the whole site, edits titles and descriptions in bulk, and shows your Search Console figures.",
+    "version": "1.0.0",
+    "requires": {
+        "teme": "^1.0"
+    },
+    "plugin": "Teme\\Seo\\TemeSeo",
+    "license": "MIT",
+    "author": "The Teme maintainers",
+    "homepage": "https://github.com/temecms/teme/tree/main/plugins/seo",
+    "capabilities": ["content.read", "content.write", "jobs", "http", "ai"],
+    "hosts": ["oauth2.googleapis.com", "searchconsole.googleapis.com"],
+    "hooks": [
+        "ContentSaved",
+        "ContentPublished",
+        "ContentUnpublished",
+        "ContentTrashed",
+        "ContentRestored",
+        "ContentDeleted"
+    ],
+    "jobs": [
+        {
+            "key": "index-site",
+            "label": "Read the site's links",
+            "long": true,
+            "tries": 1
+        },
+        {
+            "key": "suggest-links",
+            "label": "Find link suggestions",
+            "tries": 1
+        },
+        {
+            "key": "cornerstone",
+            "label": "Change the cornerstone mark",
+            "tries": 1
+        },
+        {
+            "key": "ai-links",
+            "label": "Ask AI for link suggestions",
+            "tries": 1
+        },
+        {
+            "key": "ai-rewrite",
+            "label": "Rewrite for a keyphrase",
+            "tries": 1
+        },
+        {
+            "key": "search-console",
+            "label": "Fetch Search Console figures",
+            "tries": 2,
+            "backoff": [300]
+        }
+    ],
+    "schedules": [
+        {
+            "job": "index-site",
+            "every": "hour"
+        },
+        {
+            "job": "search-console",
+            "every": "day",
+            "enabledBy": "search_console"
+        }
+    ],
+    "owns": {
+        "tables": [
+            "seo_items",
+            "seo_links",
+            "seo_suggestions",
+            "seo_search_days",
+            "seo_search_rows"
+        ]
+    },
+    "contributes": {
+        "permissions": [
+            {
+                "id": "manage",
+                "label": "Use Teme SEO's pages",
+                "description": "Open the audit, the links report, titles and descriptions, and Search Console.",
+                "roles": ["editor"]
+            }
+        ],
+        "settingsSections": [
+            {
+                "id": "audit",
+                "label": "Audit",
+                "description": "What the site-wide audit counts as a problem."
+            },
+            {
+                "id": "search-console",
+                "label": "Search Console",
+                "description": "Your Google Search Console connection. Teme SEO reads your figures once a day."
+            }
+        ],
+        "settings": [
+            {
+                "key": "thin_words",
+                "type": "number",
+                "label": "Fewest words",
+                "description": "A published item with fewer words than this is listed as thin in the audit.",
+                "default": 300,
+                "min": 50,
+                "max": 5000,
+                "unit": "words",
+                "section": "audit"
+            },
+            {
+                "key": "search_console",
+                "type": "boolean",
+                "label": "Read Search Console",
+                "description": "Fetches your clicks, impressions, top searches and top pages from Google once a day.",
+                "default": false,
+                "section": "search-console"
+            },
+            {
+                "key": "property",
+                "type": "text",
+                "label": "Property",
+                "description": "Your property as Search Console names it: a domain property such as sc-domain:example.com, or an address prefix such as https://example.com/.",
+                "maxLength": 200,
+                "example": "sc-domain:example.com",
+                "visibleWhen": {
+                    "search_console": true
+                },
+                "section": "search-console"
+            },
+            {
+                "key": "client_id",
+                "type": "text",
+                "label": "OAuth client ID",
+                "description": "The client ID of the OAuth client you made in Google Cloud for this site.",
+                "maxLength": 200,
+                "visibleWhen": {
+                    "search_console": true
+                },
+                "section": "search-console"
+            },
+            {
+                "key": "client_secret",
+                "type": "secret",
+                "label": "OAuth client secret",
+                "description": "That client's secret.",
+                "visibleWhen": {
+                    "search_console": true
+                },
+                "section": "search-console"
+            },
+            {
+                "key": "refresh_token",
+                "type": "secret",
+                "label": "Refresh token",
+                "description": "A refresh token for that client with read access to Search Console, as the README explains.",
+                "visibleWhen": {
+                    "search_console": true
+                },
+                "section": "search-console"
+            }
+        ],
+        "actions": [
+            {
+                "id": "read-links",
+                "label": "Read every item's links again",
+                "description": "Reads each item again and rebuilds the links report, the audit and the link suggestions' list of items.",
+                "job": "index-site"
+            },
+            {
+                "id": "fetch-search-console",
+                "label": "Fetch Search Console now",
+                "description": "Fetches the last 28 days from Search Console now instead of waiting for tomorrow.",
+                "job": "search-console"
+            }
+        ],
+        "columns": [
+            {
+                "id": "links-in",
+                "label": "Links in",
+                "kind": "number",
+                "width": "narrow"
+            },
+            {
+                "id": "links-out",
+                "label": "Links out",
+                "kind": "number",
+                "width": "narrow"
+            }
+        ],
+        "aiTasks": [
+            {
+                "id": "link-ideas",
+                "label": "Link ideas",
+                "description": "Reads the draft and your published titles, and picks phrases worth linking.",
+                "needs": ["text", "structured-output"],
+                "sends": "draft",
+                "maxOutputTokens": 2000
+            },
+            {
+                "id": "keyphrase-rewrite",
+                "label": "Keyphrase rewrite",
+                "description": "Rewrites the introduction, the headings or a few paragraphs of the draft around a keyphrase you give.",
+                "needs": ["text", "structured-output"],
+                "sends": "draft",
+                "maxOutputTokens": 8000
+            }
+        ],
+        "editorPanels": [
+            {
+                "id": "links",
+                "label": "Internal links",
+                "description": "Suggests links to your own published items, and marks cornerstone items.",
+                "icon": "link",
+                "types": ["post", "page"],
+                "actions": [
+                    {
+                        "id": "find",
+                        "label": "Find links",
+                        "job": "suggest-links"
+                    },
+                    {
+                        "id": "ask-ai",
+                        "label": "Ask AI for links",
+                        "job": "ai-links",
+                        "confirm": "This sends the draft and your published titles to the site's AI connection."
+                    },
+                    {
+                        "id": "cornerstone",
+                        "label": "Cornerstone",
+                        "job": "cornerstone",
+                        "fields": [
+                            {
+                                "key": "mark",
+                                "type": "select",
+                                "label": "This item is",
+                                "options": {
+                                    "yes": "Cornerstone content",
+                                    "no": "Not cornerstone content"
+                                },
+                                "required": true,
+                                "default": "yes"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "keyphrase",
+                "label": "Keyphrase rewrite",
+                "description": "Asks the site's AI connection to rewrite parts of the draft around a keyphrase. You see every change before it is used.",
+                "icon": "pen-line",
+                "types": ["post", "page"],
+                "actions": [
+                    {
+                        "id": "rewrite",
+                        "label": "Rewrite",
+                        "job": "ai-rewrite",
+                        "confirm": "This sends the draft to the site's AI connection.",
+                        "fields": [
+                            {
+                                "key": "keyphrase",
+                                "type": "text",
+                                "label": "Keyphrase",
+                                "maxLength": 80,
+                                "required": true
+                            },
+                            {
+                                "key": "part",
+                                "type": "select",
+                                "label": "Rewrite",
+                                "options": {
+                                    "intro": "The introduction",
+                                    "headings": "The headings",
+                                    "spread": "A few paragraphs, to spread the keyphrase"
+                                },
+                                "required": true,
+                                "default": "intro"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "area": {
+            "label": "SEO",
+            "description": "The site-wide audit, links, titles and descriptions, and Search Console.",
+            "permission": "manage",
+            "menu": "content",
+            "pages": [
+                {
+                    "id": "audit",
+                    "label": "Audit",
+                    "blocks": [
+                        {
+                            "type": "notice",
+                            "id": "audit-hint",
+                            "text": "Each item is checked as of its latest draft. For a published item with unpublished changes, that can differ from what readers see.",
+                            "tone": "info"
+                        },
+                        {
+                            "type": "figures",
+                            "id": "totals",
+                            "items": [
+                                {
+                                    "id": "published",
+                                    "label": "Published items",
+                                    "format": "number"
+                                },
+                                {
+                                    "id": "problems",
+                                    "label": "With a problem",
+                                    "format": "number"
+                                },
+                                {
+                                    "id": "orphaned",
+                                    "label": "Orphaned",
+                                    "format": "number"
+                                },
+                                {
+                                    "id": "cornerstone",
+                                    "label": "Cornerstone",
+                                    "format": "number"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "table",
+                            "id": "problems",
+                            "record": "item",
+                            "columns": [
+                                {
+                                    "id": "title",
+                                    "label": "Title",
+                                    "kind": "text"
+                                },
+                                {
+                                    "id": "status",
+                                    "label": "Status",
+                                    "kind": "badge"
+                                },
+                                {
+                                    "id": "problems",
+                                    "label": "Problems",
+                                    "kind": "text"
+                                },
+                                {
+                                    "id": "count",
+                                    "label": "How many",
+                                    "kind": "number",
+                                    "sortable": true
+                                }
+                            ],
+                            "search": true,
+                            "filters": [
+                                {
+                                    "id": "check",
+                                    "label": "Problem",
+                                    "options": {
+                                        "any": "Any problem",
+                                        "no-description": "No description",
+                                        "long-title": "Title too long",
+                                        "long-description": "Description too long",
+                                        "no-featured-image": "No featured image",
+                                        "missing-alt": "Images without alt text",
+                                        "no-internal-links": "No internal links",
+                                        "broken-links": "Links readers can't reach",
+                                        "orphaned": "Orphaned",
+                                        "thin": "Thin content",
+                                        "hidden": "Hidden from search engines"
+                                    }
+                                },
+                                {
+                                    "id": "cornerstone",
+                                    "label": "Cornerstone",
+                                    "options": {
+                                        "yes": "Cornerstone only"
+                                    }
+                                }
+                            ],
+                            "perPage": 25,
+                            "rowActions": ["edit"]
+                        },
+                        {
+                            "type": "actions",
+                            "id": "upkeep",
+                            "actions": ["read-links"]
+                        }
+                    ]
+                },
+                {
+                    "id": "links",
+                    "label": "Links",
+                    "blocks": [
+                        {
+                            "type": "notice",
+                            "id": "orphans-hint",
+                            "text": "Orphaned items are published items no other published item links to. Readers and search engines find them only through lists and the sitemap. Cornerstone items come first. Links are counted as of each item's latest draft.",
+                            "tone": "info"
+                        },
+                        {
+                            "type": "table",
+                            "id": "orphans",
+                            "record": "link",
+                            "columns": [
+                                {
+                                    "id": "title",
+                                    "label": "Title",
+                                    "kind": "text"
+                                },
+                                {
+                                    "id": "type",
+                                    "label": "Type",
+                                    "kind": "text"
+                                },
+                                {
+                                    "id": "cornerstone",
+                                    "label": "Cornerstone",
+                                    "kind": "badge"
+                                },
+                                {
+                                    "id": "links-in",
+                                    "label": "Links in",
+                                    "kind": "number",
+                                    "sortable": true
+                                },
+                                {
+                                    "id": "links-out",
+                                    "label": "Links out",
+                                    "kind": "number",
+                                    "sortable": true
+                                }
+                            ],
+                            "search": true,
+                            "filters": [
+                                {
+                                    "id": "show",
+                                    "label": "Show",
+                                    "options": {
+                                        "orphaned": "Orphaned items",
+                                        "all": "Every published item"
+                                    }
+                                },
+                                {
+                                    "id": "cornerstone",
+                                    "label": "Cornerstone",
+                                    "options": {
+                                        "yes": "Cornerstone only"
+                                    }
+                                }
+                            ],
+                            "perPage": 25,
+                            "rowActions": ["edit"]
+                        }
+                    ]
+                },
+                {
+                    "id": "titles",
+                    "label": "Titles and descriptions",
+                    "blocks": [
+                        {
+                            "type": "notice",
+                            "id": "titles-hint",
+                            "text": "Each change is saved as a new revision of the item's draft, as the editor saves it. A published item shows the change once it is published again.",
+                            "tone": "info"
+                        },
+                        {
+                            "type": "table",
+                            "id": "titles",
+                            "record": "item",
+                            "columns": [
+                                {
+                                    "id": "title",
+                                    "label": "Title",
+                                    "kind": "text"
+                                },
+                                {
+                                    "id": "seo-title",
+                                    "label": "SEO title",
+                                    "kind": "text"
+                                },
+                                {
+                                    "id": "description",
+                                    "label": "Meta description",
+                                    "kind": "text"
+                                },
+                                {
+                                    "id": "status",
+                                    "label": "Status",
+                                    "kind": "badge"
+                                }
+                            ],
+                            "search": true,
+                            "filters": [
+                                {
+                                    "id": "missing",
+                                    "label": "Missing",
+                                    "options": {
+                                        "seo-title": "No SEO title",
+                                        "description": "No meta description"
+                                    }
+                                },
+                                {
+                                    "id": "status",
+                                    "label": "Status",
+                                    "options": {
+                                        "published": "Published",
+                                        "unpublished": "Not published"
+                                    }
+                                }
+                            ],
+                            "perPage": 50,
+                            "rowActions": ["edit"]
+                        }
+                    ]
+                },
+                {
+                    "id": "search-console",
+                    "label": "Search Console",
+                    "blocks": [
+                        {
+                            "type": "notice",
+                            "id": "search-console-hint",
+                            "text": "The last 28 days Google has figures for. Connect Search Console in Teme SEO's settings; figures arrive once a day.",
+                            "tone": "info"
+                        },
+                        {
+                            "type": "figures",
+                            "id": "search-totals",
+                            "items": [
+                                {
+                                    "id": "clicks",
+                                    "label": "Clicks",
+                                    "format": "number"
+                                },
+                                {
+                                    "id": "impressions",
+                                    "label": "Impressions",
+                                    "format": "number"
+                                },
+                                {
+                                    "id": "ctr",
+                                    "label": "Click rate",
+                                    "format": "percent"
+                                },
+                                {
+                                    "id": "position",
+                                    "label": "Average position",
+                                    "format": "number"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "chart",
+                            "id": "search-daily",
+                            "label": "Clicks and impressions by day",
+                            "kind": "line",
+                            "series": [
+                                {
+                                    "id": "clicks",
+                                    "label": "Clicks"
+                                },
+                                {
+                                    "id": "impressions",
+                                    "label": "Impressions"
+                                }
+                            ]
+                        },
+                        {
+                            "type": "table",
+                            "id": "search",
+                            "record": "search",
+                            "columns": [
+                                {
+                                    "id": "key",
+                                    "label": "Search or page",
+                                    "kind": "text"
+                                },
+                                {
+                                    "id": "clicks",
+                                    "label": "Clicks",
+                                    "kind": "number",
+                                    "sortable": true
+                                },
+                                {
+                                    "id": "impressions",
+                                    "label": "Impressions",
+                                    "kind": "number",
+                                    "sortable": true
+                                },
+                                {
+                                    "id": "position",
+                                    "label": "Position",
+                                    "kind": "number",
+                                    "sortable": true
+                                }
+                            ],
+                            "search": true,
+                            "perPage": 20,
+                            "filters": [
+                                {
+                                    "id": "show",
+                                    "label": "Show",
+                                    "options": {
+                                        "searches": "Top searches",
+                                        "pages": "Top pages"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "actions",
+                            "id": "search-upkeep",
+                            "actions": ["fetch-search-console"]
+                        }
+                    ]
+                }
+            ],
+            "records": [
+                {
+                    "id": "item",
+                    "label": "Item",
+                    "plural": "Items",
+                    "titleField": "title",
+                    "sections": [
+                        {
+                            "id": "search",
+                            "label": "Search",
+                            "fields": [
+                                {
+                                    "key": "title",
+                                    "type": "text",
+                                    "label": "Title",
+                                    "required": true,
+                                    "maxLength": 512
+                                },
+                                {
+                                    "key": "seo_title",
+                                    "type": "text",
+                                    "label": "SEO title",
+                                    "description": "The title search engines show. Leave empty to use the title.",
+                                    "maxLength": 200
+                                },
+                                {
+                                    "key": "meta_description",
+                                    "type": "textarea",
+                                    "label": "Meta description",
+                                    "description": "The summary search engines may show under the title.",
+                                    "maxLength": 320
+                                },
+                                {
+                                    "key": "cornerstone",
+                                    "type": "boolean",
+                                    "label": "Cornerstone content",
+                                    "description": "Your most important items: they come first in link suggestions and in the orphaned report."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "link",
+                    "label": "Item",
+                    "plural": "Items",
+                    "titleField": "title",
+                    "sections": [
+                        {
+                            "id": "links",
+                            "label": "Links",
+                            "fields": [
+                                {
+                                    "key": "title",
+                                    "type": "text",
+                                    "label": "Title",
+                                    "required": true,
+                                    "maxLength": 512
+                                },
+                                {
+                                    "key": "cornerstone",
+                                    "type": "boolean",
+                                    "label": "Cornerstone content",
+                                    "description": "Your most important items: they come first in link suggestions and in the orphaned report."
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "search",
+                    "label": "Search",
+                    "plural": "Searches",
+                    "titleField": "key",
+                    "sections": [
+                        {
+                            "id": "search",
+                            "label": "Search",
+                            "fields": [
+                                {
+                                    "key": "key",
+                                    "type": "text",
+                                    "label": "Search or page"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
