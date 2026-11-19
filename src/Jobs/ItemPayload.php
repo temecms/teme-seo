@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Reads what an editor panel's action queued: the item's ID and the form's
+ * values, refusing a run that names no item.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Jobs;
@@ -7,10 +16,6 @@ namespace Teme\Seo\Jobs;
 use RuntimeException;
 use Teme\Contracts\Jobs\JobContext;
 
-/**
- * Reads what an editor panel's action queued: the item's ID and the form's
- * values, refusing a run that names no item.
- */
 final class ItemPayload
 {
     /**

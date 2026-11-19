@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Fetches Search Console's figures for the property in Teme SEO's settings:
+ * totals by day for the last 56 days Google has, and the top 100 searches
+ * and pages of the last 28, replacing what was kept.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\SearchConsole;
@@ -13,11 +23,6 @@ use Teme\Contracts\Settings\SettingsReader;
 use Teme\Seo\Storage\SearchFigures;
 use Teme\Seo\TemeSeo;
 
-/**
- * Fetches Search Console's figures for the property in Teme SEO's settings:
- * totals by day for the last 56 days Google has, and the top 100 searches
- * and pages of the last 28, replacing what was kept.
- */
 final readonly class FetchSearchConsole implements JobHandler
 {
     /** Search Console's figures arrive about two days late. */

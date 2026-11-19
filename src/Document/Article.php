@@ -1,14 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Teme\Seo\Document;
-
 /**
  * What Teme SEO reads from an item's Tiptap document: its words, its text
  * in the order the editor holds it, the items it links to by ID, its
  * headings and paragraphs, and the images that have no alt text.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
  */
+
+declare(strict_types=1);
+
+namespace Teme\Seo\Document;
+
 final readonly class Article
 {
     /** An internal link's address, as the editor stores it: the item's ID, never its address. */

@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Reads an item's working revision for the person the work acts for, and
+ * keeps what Teme SEO needs of it in the index: its search fields, its
+ * words and its links.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Storage;
@@ -10,11 +20,6 @@ use Teme\Contracts\Content\ItemSnapshot;
 use Teme\Contracts\Content\ReadRefused;
 use Teme\Seo\Document\Article;
 
-/**
- * Reads an item's working revision for the person the work acts for, and
- * keeps what Teme SEO needs of it in the index: its search fields, its
- * words and its links.
- */
 final readonly class Indexer
 {
     public function __construct(

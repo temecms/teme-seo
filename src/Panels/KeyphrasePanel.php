@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * The Keyphrase rewrite panel: the rewrites the site's AI made of the item
+ * around a keyphrase, each a proposal the person sees word by word before
+ * using it.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Panels;
@@ -9,11 +19,6 @@ use Teme\Contracts\Editor\EditorPanelContext;
 use Teme\Contracts\Editor\PanelView;
 use Teme\Seo\Storage\SuggestionStore;
 
-/**
- * The Keyphrase rewrite panel: the rewrites the site's AI made of the item
- * around a keyphrase, each a proposal the person sees word by word before
- * using it.
- */
 final readonly class KeyphrasePanel implements EditorPanel
 {
     public const string ID = 'keyphrase';

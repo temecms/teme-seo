@@ -1,14 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Teme\Seo\Ai;
-
 /**
  * Picks the published items most worth showing the AI for one article: those
  * whose titles share the most words with it, cornerstone items first among
  * equals, so a large site's list fits in one request.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
  */
+
+declare(strict_types=1);
+
+namespace Teme\Seo\Ai;
+
 final class Shortlist
 {
     /**

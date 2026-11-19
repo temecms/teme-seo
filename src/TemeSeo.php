@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Teme SEO, the free first-party SEO plugin: it keeps an index of the
+ * site's items and the links between them as content changes, and hands
+ * Teme its editor panels, list columns, jobs and its own pages.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo;
@@ -43,11 +53,6 @@ use Teme\Seo\Storage\ItemIndex;
 use Teme\Seo\Storage\SearchFigures;
 use Teme\Seo\Storage\SuggestionStore;
 
-/**
- * Teme SEO, the free first-party SEO plugin: it keeps an index of the
- * site's items and the links between them as content changes, and hands
- * Teme its editor panels, list columns, jobs and its own pages.
- */
 final class TemeSeo implements HasEditorPanels, HasListColumns, HasPluginArea, Plugin, PluginHasJobs
 {
     /** The plugin's settings group. */

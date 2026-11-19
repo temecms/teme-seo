@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Ask AI for links: sends the draft's words and a shortlist of the site's
+ * published titles to the site's AI connection, and offers each link it
+ * picks whose phrase is really in the draft and whose item is on the list.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Ai;
@@ -19,11 +29,6 @@ use Teme\Seo\Storage\Indexer;
 use Teme\Seo\Storage\ItemIndex;
 use Teme\Seo\Storage\SuggestionStore;
 
-/**
- * Ask AI for links: sends the draft's words and a shortlist of the site's
- * published titles to the site's AI connection, and offers each link it
- * picks whose phrase is really in the draft and whose item is on the list.
- */
 final readonly class AskAiForLinks implements JobHandler
 {
     /** The prefix of the suggestions this job makes. */

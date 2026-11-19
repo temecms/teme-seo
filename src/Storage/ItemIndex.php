@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Teme SEO's index of the site's items and the links between them, in its
+ * own tables `seo_items` and `seo_links`. The only class that reads or
+ * writes them, so a Laravel upgrade touches one place.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Storage;
@@ -10,11 +20,6 @@ use Illuminate\Support\Facades\DB;
 use Teme\Contracts\Content\ItemRef;
 use Teme\Seo\Checks\BuiltInChecks;
 
-/**
- * Teme SEO's index of the site's items and the links between them, in its
- * own tables `seo_items` and `seo_links`. The only class that reads or
- * writes them, so a Laravel upgrade touches one place.
- */
 final class ItemIndex
 {
     /**

@@ -1,16 +1,21 @@
 <?php
 
+/**
+ * Search Console's figures as Teme SEO last fetched them, in its own tables
+ * `seo_search_days` and `seo_search_rows`: totals by day for a short
+ * history, and the top searches and pages of the last 28 days.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Storage;
 
 use Illuminate\Support\Facades\DB;
 
-/**
- * Search Console's figures as Teme SEO last fetched them, in its own tables
- * `seo_search_days` and `seo_search_rows`: totals by day for a short
- * history, and the top searches and pages of the last 28 days.
- */
 final class SearchFigures
 {
     /** How many days of totals are kept: two periods, so each figure shows its change. */

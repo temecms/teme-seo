@@ -1,14 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
-namespace Teme\Seo\Checks;
-
 /**
  * The audit's own checks, each a plain fact about a published item that
  * Teme SEO can tell from its index: its words, as people read them, and
  * the SQL that finds the items failing it in the plugin's own tables.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
  */
+
+declare(strict_types=1);
+
+namespace Teme\Seo\Checks;
+
 final class BuiltInChecks
 {
     /** The longest title search results show in full, in characters. */

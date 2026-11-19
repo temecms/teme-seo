@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Speaks to Google's Search Console API through the plugin's outbound door:
+ * trades the saved refresh token for an access token, and asks the search
+ * analytics of one property. Every failure is one plain sentence.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\SearchConsole;
@@ -7,11 +17,6 @@ namespace Teme\Seo\SearchConsole;
 use RuntimeException;
 use Teme\Contracts\Http\OutboundHttp;
 
-/**
- * Speaks to Google's Search Console API through the plugin's outbound door:
- * trades the saved refresh token for an access token, and asks the search
- * analytics of one property. Every failure is one plain sentence.
- */
 final readonly class SearchConsoleClient
 {
     private const string TOKEN = 'https://oauth2.googleapis.com/token';

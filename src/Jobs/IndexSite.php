@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Reads the site into Teme SEO's index, as the person the run acts for.
+ * The hourly pass reads only the items a change marked and the drafts it
+ * hasn't read. Reading every item again walks every published item, and
+ * repairs what changed while Teme SEO was off.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Jobs;
@@ -13,12 +24,6 @@ use Teme\Contracts\Jobs\JobHandler;
 use Teme\Seo\Storage\Indexer;
 use Teme\Seo\Storage\ItemIndex;
 
-/**
- * Reads the site into Teme SEO's index, as the person the run acts for.
- * The hourly pass reads only the items a change marked and the drafts it
- * hasn't read. Reading every item again walks every published item, and
- * repairs what changed while Teme SEO was off.
- */
 final readonly class IndexSite implements JobHandler
 {
     /** Items read in one run at most; the next pass reads the rest. */

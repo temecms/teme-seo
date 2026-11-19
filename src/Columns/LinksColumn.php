@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * The Links in and Links out columns of the content lists: how many
+ * published items link to each item, and how many items it links to, from
+ * Teme SEO's index. An item the index hasn't read shows an empty cell.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Columns;
@@ -9,11 +19,6 @@ use Teme\Contracts\Lists\ListColumn;
 use Teme\Contracts\Lists\ListRows;
 use Teme\Seo\Storage\ItemIndex;
 
-/**
- * The Links in and Links out columns of the content lists: how many
- * published items link to each item, and how many items it links to, from
- * Teme SEO's index. An item the index hasn't read shows an empty cell.
- */
 final readonly class LinksColumn implements ListColumn
 {
     public function __construct(

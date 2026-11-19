@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Find links: reads the item's draft as the person who asked, and suggests
+ * links from its phrases to the site's published items, cornerstone items
+ * first, leaving out items it already links to and links the person
+ * discarded before.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Jobs;
@@ -16,12 +27,6 @@ use Teme\Seo\Storage\Indexer;
 use Teme\Seo\Storage\ItemIndex;
 use Teme\Seo\Storage\SuggestionStore;
 
-/**
- * Find links: reads the item's draft as the person who asked, and suggests
- * links from its phrases to the site's published items, cornerstone items
- * first, leaving out items it already links to and links the person
- * discarded before.
- */
 final readonly class SuggestLinks implements JobHandler
 {
     /** The prefix of the suggestions this job makes. */

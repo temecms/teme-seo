@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Finds phrases in an article that name another published item, from that
+ * item's title, and says where a link would go: the phrase as written and
+ * which of its matches, counted as the editor counts them. Cornerstone
+ * items come first, then longer phrases. English stop words for now.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Links;
@@ -7,12 +18,6 @@ namespace Teme\Seo\Links;
 use Teme\Seo\Document\Article;
 use Teme\Seo\Document\TextRun;
 
-/**
- * Finds phrases in an article that name another published item, from that
- * item's title, and says where a link would go: the phrase as written and
- * which of its matches, counted as the editor counts them. Cornerstone
- * items come first, then longer phrases. English stop words for now.
- */
 final class LinkSuggester
 {
     /** The longest phrase it tries, in words. */

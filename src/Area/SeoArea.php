@@ -1,5 +1,16 @@
 <?php
 
+/**
+ * Teme SEO's own pages: the audit, the links report, titles and
+ * descriptions, and Search Console. Reads come from the plugin's own
+ * tables; a save goes through Teme's content door as the person editing,
+ * with the editor's own checks.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Area;
@@ -26,12 +37,6 @@ use Teme\Seo\Storage\ItemIndex;
 use Teme\Seo\Storage\SearchFigures;
 use Teme\Seo\TemeSeo;
 
-/**
- * Teme SEO's own pages: the audit, the links report, titles and
- * descriptions, and Search Console. Reads come from the plugin's own
- * tables; a save goes through Teme's content door as the person editing,
- * with the editor's own checks.
- */
 final readonly class SeoArea implements PluginArea
 {
     /** The most unpublished items a table looks through for one person. */

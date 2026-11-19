@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * Rewrite: asks the site's AI to rewrite the draft's introduction, its
+ * headings, or a few of its paragraphs around a keyphrase, and offers the
+ * result as a whole document the person compares word by word before using
+ * it. Blocks holding links or other marks are never sent to be rewritten,
+ * so no link is lost.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Ai;
@@ -17,13 +29,6 @@ use Teme\Seo\Panels\KeyphrasePanel;
 use Teme\Seo\Storage\Indexer;
 use Teme\Seo\Storage\SuggestionStore;
 
-/**
- * Rewrite: asks the site's AI to rewrite the draft's introduction, its
- * headings, or a few of its paragraphs around a keyphrase, and offers the
- * result as a whole document the person compares word by word before using
- * it. Blocks holding links or other marks are never sent to be rewritten,
- * so no link is lost.
- */
 final readonly class RewriteForKeyphrase implements JobHandler
 {
     /** The prefix of the suggestions this job makes. */

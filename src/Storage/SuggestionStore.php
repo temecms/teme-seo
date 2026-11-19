@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * The suggestions Teme SEO's editor panels offer, in its own table
+ * `seo_suggestions`: what a job found for an item, until the person uses or
+ * discards each, and what they did, so a discarded link isn't offered again.
+ *
+ * @package teme/seo
+ * @since   1.0.0
+ * @license MIT
+ */
+
 declare(strict_types=1);
 
 namespace Teme\Seo\Storage;
@@ -10,11 +20,6 @@ use Teme\Contracts\Editor\SuggestedChange;
 use Teme\Contracts\Editor\Suggestion;
 use Throwable;
 
-/**
- * The suggestions Teme SEO's editor panels offer, in its own table
- * `seo_suggestions`: what a job found for an item, until the person uses or
- * discards each, and what they did, so a discarded link isn't offered again.
- */
 final class SuggestionStore
 {
     /**
