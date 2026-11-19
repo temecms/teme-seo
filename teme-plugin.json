@@ -4,7 +4,7 @@
     "code": "seo",
     "label": "Teme SEO",
     "description": "Suggests internal links as you write, counts the links in and out of each item, marks cornerstone items, audits the whole site, edits titles and descriptions in bulk, and shows your Search Console figures.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "requires": {
         "teme": "^1.0"
     },
@@ -228,21 +228,8 @@
                     },
                     {
                         "id": "cornerstone",
-                        "label": "Cornerstone",
-                        "job": "cornerstone",
-                        "fields": [
-                            {
-                                "key": "mark",
-                                "type": "select",
-                                "label": "This item is",
-                                "options": {
-                                    "yes": "Cornerstone content",
-                                    "no": "Not cornerstone content"
-                                },
-                                "required": true,
-                                "default": "yes"
-                            }
-                        ]
+                        "label": "Change",
+                        "job": "cornerstone"
                     }
                 ]
             },
@@ -284,7 +271,7 @@
             }
         ],
         "area": {
-            "label": "SEO",
+            "label": "Teme SEO",
             "description": "The site-wide audit, links, titles and descriptions, and Search Console.",
             "permission": "manage",
             "menu": "content",
@@ -298,6 +285,17 @@
                             "id": "audit-hint",
                             "text": "Each item is checked as of its latest draft. For a published item with unpublished changes, that can differ from what readers see.",
                             "tone": "info"
+                        },
+                        {
+                            "type": "figures",
+                            "id": "featured",
+                            "items": [
+                                {
+                                    "id": "no-featured-image",
+                                    "label": "Without a featured image",
+                                    "format": "number"
+                                }
+                            ]
                         },
                         {
                             "type": "figures",
@@ -553,14 +551,22 @@
                         },
                         {
                             "type": "chart",
-                            "id": "search-daily",
-                            "label": "Clicks and impressions by day",
+                            "id": "search-clicks",
+                            "label": "Clicks by day",
                             "kind": "line",
                             "series": [
                                 {
                                     "id": "clicks",
                                     "label": "Clicks"
-                                },
+                                }
+                            ]
+                        },
+                        {
+                            "type": "chart",
+                            "id": "search-impressions",
+                            "label": "Impressions by day",
+                            "kind": "line",
+                            "series": [
                                 {
                                     "id": "impressions",
                                     "label": "Impressions"

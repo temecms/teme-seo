@@ -18,13 +18,16 @@ use Teme\Contracts\Content\ContentReader;
 use Teme\Contracts\Content\ItemRef;
 use Teme\Contracts\Content\ItemSnapshot;
 use Teme\Contracts\Content\ReadRefused;
+use Teme\Contracts\Settings\SettingsReader;
 use Teme\Seo\Document\Article;
+use Teme\Seo\TemeSeo;
 
 final readonly class Indexer
 {
     public function __construct(
         private ContentReader $content,
         private ItemIndex $index,
+        private ?SettingsReader $settings = null,
     ) {}
 
     /**
@@ -61,6 +64,7 @@ final readonly class Indexer
         $seoTitle = self::text($fields['seo_title'] ?? null);
         $description = self::text($fields['meta_description'] ?? null);
 
+        $thin = $this->settings === null ? 300 : max(1, $this->settings->int(TemeSeo::SETTINGS, 'thin_words'));
         $this->index->record($snapshot->item, [
             'seo_title' => $seoTitle,
             'meta_description' => $description,
@@ -68,7 +72,7 @@ final readonly class Indexer
             'has_featured_image' => ! in_array($fields['featured_image'] ?? null, [null, '', []], true),
             'words' => $article->words,
             'images_missing_alt' => $article->imagesMissingAlt,
-        ], $article->links);
+        ], $article->links, $thin);
 
         return $snapshot;
     }

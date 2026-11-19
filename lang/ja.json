@@ -141,5 +141,13 @@
     "With a problem": "問題あり",
     "Your Google Search Console connection. Teme SEO reads your figures once a day.": "Google Search Console との接続。Teme SEO は 1 日 1 回数値を読み込みます。",
     "Your most important items: they come first in link suggestions and in the orphaned report.": "最も重要なアイテム。リンク候補と孤立レポートで先に表示されます。",
-    "Your property as Search Console names it: a domain property such as sc-domain:example.com, or an address prefix such as https://example.com/.": "Search Console での名前どおりのプロパティ。sc-domain:example.com のようなドメインプロパティ、または https://example.com/ のような URL プレフィックス。"
+    "Your property as Search Console names it: a domain property such as sc-domain:example.com, or an address prefix such as https://example.com/.": "Search Console での名前どおりのプロパティ。sc-domain:example.com のようなドメインプロパティ、または https://example.com/ のような URL プレフィックス。",
+    "Teme SEO": "Teme SEO",
+    "Change": "変更",
+    "Links in: :in. Links out: :out. Cornerstone content: :mark": "被リンク: :in。発リンク: :out。コーナーストーン: :mark",
+    "No": "いいえ",
+    "Without a featured image": "アイキャッチ画像なし",
+    "Yes": "はい",
+    "Clicks by day": "日別クリック数",
+    "Impressions by day": "日別インプレッション"
 }

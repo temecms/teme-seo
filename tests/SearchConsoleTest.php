@@ -63,10 +63,40 @@ final class SearchConsoleTest extends SeoTestCase
                     ->where('block_search-totals.items.0.value', 560)
                     ->where('block_search-totals.items.0.change', 1)
                     ->where('block_search-totals.items.1.value', 11200))
-                ->loadDeferredProps('block_search-daily', fn (Assert $reload) => $reload->has('block_search-daily.labels', 28))
+                ->loadDeferredProps('block_search-clicks', fn (Assert $reload) => $reload
+                    ->has('block_search-clicks.labels', 28)
+                    ->where('block_search-clicks.series', fn (iterable $series): bool => count(iterator_to_array($series)) === 1
+                        && iterator_to_array($series)[0]['id'] === 'clicks'))
+                ->loadDeferredProps('block_search-impressions', fn (Assert $reload) => $reload
+                    ->has('block_search-impressions.labels', 28)
+                    ->where('block_search-impressions.series', fn (iterable $series): bool => count(iterator_to_array($series)) === 1
+                        && iterator_to_array($series)[0]['id'] === 'impressions'))
                 ->loadDeferredProps('block_search', fn (Assert $reload) => $reload
                     ->where('block_search.total', 1)
                     ->where('block_search.rows.0.cells.key.value', 'https://example.com/feeding-roses/')));
+    }
+
+    #[TestDox('shows a better average position as a good change, because lower is better')]
+    public function test_it_shows_a_better_average_position_as_a_good_change_because_lower_is_better(): void
+    {
+        foreach (range(55, 0) as $ago) {
+            // Recent 28 days: position 5; the 28 before: position 10. Lower is better.
+            DB::table('seo_search_days')->insert([
+                'day' => date('Y-m-d', strtotime('-'.($ago + 2).' days')),
+                'clicks' => 10,
+                'impressions' => 100,
+                'position' => $ago < 28 ? 5.0 : 10.0,
+            ]);
+        }
+
+        $this->signIn($this->admin);
+        $this->get(route('plugins.area.show', ['code' => 'seo', 'page' => 'search-console']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->loadDeferredProps('block_search-totals', fn (Assert $reload) => $reload
+                ->where('block_search-totals.items.3.id', 'position')
+                ->where('block_search-totals.items.3.value', 5)
+                // Improvement (5 vs 10) must show as a positive change so core draws it green/up.
+                ->where('block_search-totals.items.3.change', 0.5)));
     }
 
     #[TestDox('fails the run with a plain sentence when Google refuses the token, keeping what it had')]

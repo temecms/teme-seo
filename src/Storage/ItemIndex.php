@@ -53,9 +53,9 @@ final class ItemIndex
      * @param  array{seo_title: string, meta_description: string, has_excerpt: bool, has_featured_image: bool, words: int, images_missing_alt: int}  $read
      * @param  array<string, int>  $links  occurrences by target ID
      */
-    public function record(ItemRef $item, array $read, array $links): void
+    public function record(ItemRef $item, array $read, array $links, int $thinWords = 300): void
     {
-        DB::transaction(function () use ($item, $read, $links): void {
+        DB::transaction(function () use ($item, $read, $links, $thinWords): void {
             $this->remember($item, stale: false);
 
             DB::table('seo_items')->where('id', $item->id)->update([
@@ -76,7 +76,57 @@ final class ItemIndex
             foreach (array_chunk($rows, 500) as $chunk) {
                 DB::table('seo_links')->insert($chunk);
             }
+
+            // This item and what it links to: their orphaned / broken state may have changed.
+            $this->refreshProblemsFor([$item->id, ...array_keys($links)], $thinWords);
         });
+    }
+
+    /**
+     * Stores every published item's failing checks from the index, so the
+     * Audit page can read them without working the checks out on each view.
+     */
+    public function refreshProblems(int $thinWords): void
+    {
+        $this->refreshProblemsFor([], $thinWords);
+    }
+
+    /**
+     * Stores failing checks for these items, or every published item when
+     * $ids is empty. Featured image is kept in `problems` for its filter,
+     * but left out of `problem_count`.
+     *
+     * @param  list<string>  $ids
+     */
+    public function refreshProblemsFor(array $ids, int $thinWords): void
+    {
+        $parts = [];
+        $counts = [];
+        $bindings = [];
+
+        foreach (BuiltInChecks::conditions() as $id => $condition) {
+            $json = "'[\"".str_replace("'", "''", $id)."\"]'::jsonb";
+            $parts[] = "(case when {$condition} then {$json} else '[]'::jsonb end)";
+
+            if ($id !== 'no-featured-image') {
+                $counts[] = "(case when {$condition} then 1 else 0 end)";
+            }
+
+            if ($id === 'thin') {
+                // One binding for problems, one for the counted sum.
+                $bindings[] = $thinWords;
+                $bindings[] = $thinWords;
+            }
+        }
+
+        $sql = 'update seo_items as i set problems = '.implode(' || ', $parts).', problem_count = '.implode(' + ', $counts).' where '.BuiltInChecks::published('i');
+
+        if ($ids !== []) {
+            $sql .= ' and i.id in ('.implode(', ', array_fill(0, count($ids), '?')).')';
+            $bindings = [...$bindings, ...$ids];
+        }
+
+        DB::update($sql, $bindings);
     }
 
     /**

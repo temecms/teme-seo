@@ -65,14 +65,29 @@ final class SuggestionsTest extends SeoTestCase
         $draft = seoWrite($this->editor, 'Our guide to roses', [seoParagraph('All about roses.')]);
 
         $this->signIn($this->editor);
-        $this->runAction($draft->id, 'cornerstone', ['mark' => 'yes'])->assertOk();
+        $this->runAction($draft->id, 'cornerstone')->assertOk();
 
         expect(DB::table('seo_items')->where('id', $draft->id)->value('cornerstone'))->toBeTrue()
-            ->and($this->getJson($this->panelUrl($draft->id))->json('status'))->toBe('Links in: 0. Links out: 0. Cornerstone content.');
+            ->and($this->getJson($this->panelUrl($draft->id))->json('status'))->toBe('Links in: 0. Links out: 0. Cornerstone content: Yes');
 
-        $this->runAction($draft->id, 'cornerstone', ['mark' => 'no']);
+        $this->runAction($draft->id, 'cornerstone');
 
-        expect(DB::table('seo_items')->where('id', $draft->id)->value('cornerstone'))->toBeFalse();
+        expect(DB::table('seo_items')->where('id', $draft->id)->value('cornerstone'))->toBeFalse()
+            ->and($this->getJson($this->panelUrl($draft->id))->json('status'))->toBe('Links in: 0. Links out: 0. Cornerstone content: No');
+    }
+
+    #[TestDox('offers Change for cornerstone without keeping the choice open')]
+    public function test_it_offers_change_for_cornerstone_without_keeping_the_choice_open(): void
+    {
+        $draft = seoWrite($this->editor, 'Our guide to roses', [seoParagraph('All about roses.')]);
+
+        $this->signIn($this->editor);
+        $panel = $this->getJson($this->panelUrl($draft->id))->assertOk()->json();
+
+        // The panel's actions come from the manifest via core; assert the job still toggles from a closed control.
+        expect($panel['status'])->toBe('Links in: 0. Links out: 0. Cornerstone content: No');
+        $this->runAction($draft->id, 'cornerstone')->assertOk();
+        expect(DB::table('seo_items')->where('id', $draft->id)->value('cornerstone'))->toBeTrue();
     }
 
     #[TestDox('writes nothing when the person may not edit the item')]

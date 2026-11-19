@@ -2,6 +2,17 @@
 
 All notable changes to Teme SEO are listed here. Teme SEO follows [Semantic Versioning](https://semver.org/); its version is its own, apart from Teme's.
 
+## 1.0.1 (unreleased)
+
+### Fixed
+
+- A better average position on Search Console (a lower number) shows as a good change, not a drop.
+- Posts without a featured image are counted on their own at the top of the Audit; they no longer make every post look like it has a problem.
+- Cornerstone content is one line (Yes or No) with a **Change** action, instead of a choice that stays open in the editor panel.
+- The area is named **Teme SEO**, matching the plugin and the menu.
+- Search Console draws clicks and impressions as two charts, so the clicks line is readable.
+- The Audit table reads problems the hourly job already stored, so it stays within its time budget on larger sites.
+
 ## 1.0.0 (unreleased)
 
 ### Added

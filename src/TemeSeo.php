@@ -74,7 +74,7 @@ final class TemeSeo implements HasEditorPanels, HasListColumns, HasPluginArea, P
     ) {
         $this->index = new ItemIndex;
         $this->suggestions = new SuggestionStore;
-        $this->indexer = new Indexer($reader, $this->index);
+        $this->indexer = new Indexer($reader, $this->index, $settings);
     }
 
     /**
@@ -125,7 +125,7 @@ final class TemeSeo implements HasEditorPanels, HasListColumns, HasPluginArea, P
      */
     public function pluginArea(): PluginArea
     {
-        return new SeoArea($this->index, new SearchFigures, $this->reader, $this->writer, $this->settings);
+        return new SeoArea($this->index, new SearchFigures, $this->reader, $this->writer);
     }
 
     /**
@@ -138,7 +138,7 @@ final class TemeSeo implements HasEditorPanels, HasListColumns, HasPluginArea, P
         $suggester = new LinkSuggester;
 
         return [
-            'index-site' => new IndexSite($this->reader, $this->indexer, $this->index),
+            'index-site' => new IndexSite($this->reader, $this->indexer, $this->index, $this->settings),
             'suggest-links' => new SuggestLinks($this->indexer, $this->index, $this->suggestions, $suggester),
             'cornerstone' => new MarkCornerstone($this->indexer, $this->index),
             'ai-links' => new AskAiForLinks($this->ai, $this->indexer, $this->index, $this->suggestions, $suggester),

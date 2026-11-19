@@ -141,5 +141,13 @@
     "With a problem": "Mit einem Problem",
     "Your Google Search Console connection. Teme SEO reads your figures once a day.": "Deine Verbindung zur Google Search Console. Teme SEO liest deine Zahlen einmal täglich.",
     "Your most important items: they come first in link suggestions and in the orphaned report.": "Deine wichtigsten Inhalte: Sie stehen in Linkvorschlägen und im Bericht über verwaiste Inhalte zuerst.",
-    "Your property as Search Console names it: a domain property such as sc-domain:example.com, or an address prefix such as https://example.com/.": "Deine Property, wie die Search Console sie nennt: eine Domain-Property wie sc-domain:example.com oder ein URL-Präfix wie https://example.com/."
+    "Your property as Search Console names it: a domain property such as sc-domain:example.com, or an address prefix such as https://example.com/.": "Deine Property, wie die Search Console sie nennt: eine Domain-Property wie sc-domain:example.com oder ein URL-Präfix wie https://example.com/.",
+    "Teme SEO": "Teme SEO",
+    "Change": "Ändern",
+    "Links in: :in. Links out: :out. Cornerstone content: :mark": "Links rein: :in. Links raus: :out. Cornerstone-Inhalt: :mark",
+    "No": "Nein",
+    "Without a featured image": "Ohne Beitragsbild",
+    "Yes": "Ja",
+    "Clicks by day": "Klicks nach Tag",
+    "Impressions by day": "Impressionen nach Tag"
 }

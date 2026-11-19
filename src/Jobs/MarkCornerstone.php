@@ -29,7 +29,13 @@ final readonly class MarkCornerstone implements JobHandler
     {
         $itemId = ItemPayload::itemId($context);
         $this->indexer->read($itemId, $context->personId());
-        $cornerstone = ItemPayload::value($context, 'mark') !== 'no';
+        $mark = ItemPayload::value($context, 'mark');
+        // Change with no choice flips the mark; an explicit yes/no still works for older callers.
+        $cornerstone = match ($mark) {
+            'yes' => true,
+            'no' => false,
+            default => ! $this->index->isCornerstone($itemId),
+        };
         $this->index->markCornerstone($itemId, $cornerstone);
 
         $context->progress(1, 1, $cornerstone ? __('Marked as cornerstone content.') : __('No longer cornerstone content.'));

@@ -141,5 +141,13 @@
     "With a problem": "किसी समस्या के साथ",
     "Your Google Search Console connection. Teme SEO reads your figures once a day.": "आपका Google Search Console कनेक्शन। Teme SEO आपके आँकड़े दिन में एक बार पढ़ता है।",
     "Your most important items: they come first in link suggestions and in the orphaned report.": "आपके सबसे महत्वपूर्ण आइटम: वे लिंक सुझावों और अनाथ आइटम की रिपोर्ट में पहले आते हैं।",
-    "Your property as Search Console names it: a domain property such as sc-domain:example.com, or an address prefix such as https://example.com/.": "आपकी प्रॉपर्टी, जैसे Search Console उसे नाम देता है: sc-domain:example.com जैसी डोमेन प्रॉपर्टी, या https://example.com/ जैसा URL प्रीफ़िक्स।"
+    "Your property as Search Console names it: a domain property such as sc-domain:example.com, or an address prefix such as https://example.com/.": "आपकी प्रॉपर्टी, जैसे Search Console उसे नाम देता है: sc-domain:example.com जैसी डोमेन प्रॉपर्टी, या https://example.com/ जैसा URL प्रीफ़िक्स।",
+    "Teme SEO": "Teme SEO",
+    "Change": "बदलें",
+    "Links in: :in. Links out: :out. Cornerstone content: :mark": "आने वाले लिंक: :in. जाने वाले लिंक: :out. कॉर्नरस्टोन सामग्री: :mark",
+    "No": "नहीं",
+    "Without a featured image": "बिना फीचर्ड इमेज",
+    "Yes": "हाँ",
+    "Clicks by day": "दिन के अनुसार क्लिक",
+    "Impressions by day": "दिन के अनुसार इंप्रेशन"
 }
