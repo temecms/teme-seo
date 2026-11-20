@@ -2,7 +2,11 @@
 
 All notable changes to Teme SEO are listed here. Teme SEO follows [Semantic Versioning](https://semver.org/); its version is its own, apart from Teme's.
 
-## 1.0.1 (unreleased)
+## 1.0.1
+
+### Changed
+
+- Teme SEO has its own repository, temecms/teme-seo, and is listed in Teme's directory. It needs Teme 1.3.1 or later, the first Teme that installs plugins requiring teme/contracts.
 
 ### Fixed
 
