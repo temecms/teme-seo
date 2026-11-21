@@ -17,7 +17,9 @@ All notable changes to Teme SEO are listed here. Teme SEO follows [Semantic Vers
 - Search Console draws clicks and impressions as two charts, so the clicks line is readable.
 - The Audit table reads problems the hourly job already stored, so it stays within its time budget on larger sites.
 
-## 1.0.0 (unreleased)
+## 1.0.0
+
+Shipped inside Teme's own repository, before Teme SEO had a download of its own; 1.0.1 is the first release here.
 
 ### Added
 
