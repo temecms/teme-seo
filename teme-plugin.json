@@ -4,7 +4,7 @@
     "code": "seo",
     "label": "Teme SEO",
     "description": "Suggests internal links as you write, counts the links in and out of each item, marks cornerstone items, audits the whole site, edits titles and descriptions in bulk, and shows your Search Console figures.",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "requires": {
         "teme": "^1.3.1"
     },
@@ -52,8 +52,7 @@
         {
             "key": "search-console",
             "label": "Fetch Search Console figures",
-            "tries": 2,
-            "backoff": [300]
+            "tries": 1
         }
     ],
     "schedules": [
@@ -482,11 +481,6 @@
                                     "id": "description",
                                     "label": "Meta description",
                                     "kind": "text"
-                                },
-                                {
-                                    "id": "status",
-                                    "label": "Status",
-                                    "kind": "badge"
                                 }
                             ],
                             "search": true,

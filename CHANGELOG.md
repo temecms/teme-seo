@@ -2,6 +2,16 @@
 
 All notable changes to Teme SEO are listed here. Teme SEO follows [Semantic Versioning](https://semver.org/); its version is its own, apart from Teme's.
 
+## 1.0.2
+
+### Fixed
+
+- The Search Console job fails once when the site isn’t connected, instead of retrying.
+- Search Console rows no longer open an edit form whose save always refused.
+- The Audit with no filter lists only published items that have a problem, not drafts.
+- The Titles and descriptions table drops Status so the description and the rest fit; Status stays as a filter.
+- A keyphrase rewrite is no longer offered once the draft has moved on from the revision it was made from, so using it can’t undo later edits.
+
 ## 1.0.1
 
 ### Changed

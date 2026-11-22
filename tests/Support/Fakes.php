@@ -100,7 +100,7 @@ final class SeoFakeReader implements ContentReader
  *
  * @param  list<array<string, mixed>>  $blocks
  */
-function seoSnapshot(string $id, string $title, array $blocks): ItemSnapshot
+function seoSnapshot(string $id, string $title, array $blocks, string $revisionId = '01kaaaaaaaaaaaaaaaaaaaaaaa'): ItemSnapshot
 {
-    return new ItemSnapshot(new ItemRef($id, 'post', $title, 'draft', null, 'en'), '01kaaaaaaaaaaaaaaaaaaaaaaa', 'a-draft', ['type' => 'doc', 'content' => $blocks], [], [], [], []);
+    return new ItemSnapshot(new ItemRef($id, 'post', $title, 'draft', null, 'en'), $revisionId, 'a-draft', ['type' => 'doc', 'content' => $blocks], [], [], [], []);
 }

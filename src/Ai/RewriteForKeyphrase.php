@@ -128,7 +128,7 @@ final readonly class RewriteForKeyphrase implements JobHandler
             SuggestLinks::shorten($label, 120),
             __('Blocks rewritten: :count. Links and formatting elsewhere stay as they are.', ['count' => $changed]),
             SuggestedChange::body([...$document, 'content' => $content]),
-        )]);
+        )], $snapshot->revisionId);
 
         $context->progress(2, 2, __('A rewrite is ready to compare.'));
     }

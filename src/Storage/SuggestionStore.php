@@ -25,12 +25,14 @@ final class SuggestionStore
     /**
      * Replaces the waiting suggestions of one panel for an item whose key
      * starts with $prefix, keeping what the person already used or discarded.
+     * When $revisionId is given, it is stored with each suggestion so a later
+     * view can drop it once the draft has moved on.
      *
      * @param  list<Suggestion>  $suggestions
      */
-    public function replace(string $itemId, string $panel, string $prefix, array $suggestions): void
+    public function replace(string $itemId, string $panel, string $prefix, array $suggestions, ?string $revisionId = null): void
     {
-        DB::transaction(function () use ($itemId, $panel, $prefix, $suggestions): void {
+        DB::transaction(function () use ($itemId, $panel, $prefix, $suggestions, $revisionId): void {
             DB::table('seo_suggestions')
                 ->where('item_id', $itemId)
                 ->where('panel', $panel)
@@ -46,13 +48,19 @@ final class SuggestionStore
                     continue;
                 }
 
+                $change = ['kind' => $suggestion->change->kind, 'values' => $suggestion->change->values];
+
+                if ($revisionId !== null && $revisionId !== '') {
+                    $change['revision_id'] = $revisionId;
+                }
+
                 DB::table('seo_suggestions')->insert([
                     'item_id' => $itemId,
                     'panel' => $panel,
                     'key' => $suggestion->id,
                     'label' => $suggestion->label,
                     'detail' => $suggestion->detail,
-                    'change' => json_encode(['kind' => $suggestion->change->kind, 'values' => $suggestion->change->values], JSON_THROW_ON_ERROR),
+                    'change' => json_encode($change, JSON_THROW_ON_ERROR),
                     'created_at' => $now,
                 ]);
             }
@@ -61,15 +69,26 @@ final class SuggestionStore
 
     /**
      * Returns the suggestions still waiting for the person, oldest first, at
-     * most twenty; one that can no longer be made is left out.
+     * most twenty; one that can no longer be made is left out. When
+     * $revisionId is given, a suggestion made from another revision is
+     * left out of the answer.
      *
      * @return list<Suggestion>
      */
-    public function waiting(string $itemId, string $panel): array
+    public function waiting(string $itemId, string $panel, ?string $revisionId = null): array
     {
         $suggestions = [];
 
         foreach (DB::table('seo_suggestions')->where('item_id', $itemId)->where('panel', $panel)->whereNull('settled')->orderBy('id')->limit(20)->get() as $row) {
+            $change = json_decode((string) $row->change, true);
+            $madeFrom = is_array($change) && is_string($change['revision_id'] ?? null) ? $change['revision_id'] : null;
+
+            // Made from an earlier revision: using it would undo later edits, so it isn't offered.
+            // Left in the table: a panel being drawn writes nothing (the next rewrite replaces it).
+            if ($revisionId !== null && $madeFrom !== null && $madeFrom !== $revisionId) {
+                continue;
+            }
+
             $suggestion = self::suggestion($row);
 
             if ($suggestion !== null) {

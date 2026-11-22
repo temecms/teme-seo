@@ -36,7 +36,7 @@ final class AiTest extends SeoTestCase
     {
         parent::setUp();
 
-        $this->context = new EditorPanelContext($this->draftId, 'r', 'post', 'en', '1', 'en');
+        $this->context = new EditorPanelContext($this->draftId, '01kaaaaaaaaaaaaaaaaaaaaaaa', 'post', 'en', '1', 'en');
     }
 
     #[TestDox('offers the AI’s links only where the phrase is in the draft and the item is a published one it was shown')]
@@ -108,5 +108,24 @@ final class AiTest extends SeoTestCase
 
         expect(DB::table('seo_suggestions')->count())->toBe(0)
             ->and(end($job->messages))->toBe('The AI suggested no change.');
+    }
+
+    #[TestDox('stops offering a keyphrase rewrite once the draft has moved on from the revision it was made from')]
+    public function test_it_stops_offering_a_keyphrase_rewrite_once_the_draft_has_moved_on_from_the_revision_it_was_made_from(): void
+    {
+        $ai = new SeoFakeAi(['blocks' => [['index' => 0, 'text' => 'Rose care starts with feeding.']]]);
+        $madeFrom = '01kccccccccccccccccccccccc';
+        $snapshot = seoSnapshot($this->draftId, 'Roses', [seoParagraph('Gardens need care.')], $madeFrom);
+
+        (new RewriteForKeyphrase($ai, new Indexer(new SeoFakeReader($snapshot), new ItemIndex), new SuggestionStore))
+            ->handle(new SeoFakeJob(['itemId' => $this->draftId, 'values' => ['keyphrase' => 'rose care', 'part' => 'intro']]));
+
+        $stillOn = new EditorPanelContext($this->draftId, $madeFrom, 'post', 'en', '1', 'en');
+        $movedOn = new EditorPanelContext($this->draftId, '01kddddddddddddddddddddddd', 'post', 'en', '1', 'en');
+
+        expect((new KeyphrasePanel(new SuggestionStore))->view($stillOn)->suggestions)->toHaveCount(1)
+            ->and((new KeyphrasePanel(new SuggestionStore))->view($movedOn)->suggestions)->toHaveCount(0)
+            // Drawing the panel writes nothing: the old rewrite is only left out.
+            ->and(DB::table('seo_suggestions')->where('item_id', $this->draftId)->whereNull('settled')->count())->toBe(1);
     }
 }

@@ -32,7 +32,7 @@ final readonly class KeyphrasePanel implements EditorPanel
      */
     public function view(EditorPanelContext $context): PanelView
     {
-        $waiting = $this->suggestions->waiting($context->itemId, self::ID);
+        $waiting = $this->suggestions->waiting($context->itemId, self::ID, $context->revisionId);
 
         if ($waiting === []) {
             return new PanelView(__('Give a keyphrase and choose what to rewrite. Nothing changes until you use a rewrite.'));

@@ -138,4 +138,25 @@ final class AuditTest extends SeoTestCase
             ->and($joined)->not->toContain('seo_links')
             ->and($joined)->toContain('problem_count');
     }
+
+    #[TestDox('with no filter lists only published items that have a problem, not drafts')]
+    public function test_it_with_no_filter_lists_only_published_items_that_have_a_problem_not_drafts(): void
+    {
+        $poor = seoWrite($this->editor, 'A very long title about every single thing you could ever want to know', [seoParagraph('Too short.')]);
+        seoWrite($this->editor, 'A draft with problems', publish: false);
+        // Two published items that only miss a featured image (not counted as a listed problem).
+        $first = seoWrite($this->editor, 'Feeding roses', [seoParagraph($this->words)], ['meta_description' => 'How and when to feed roses.']);
+        $second = seoWrite($this->editor, 'A garden guide', [seoParagraph($this->words, ['Feeding roses', $first], '.')], ['meta_description' => 'Everything about the garden.']);
+        DB::table('seo_links')->insert(['source_id' => $first->id, 'target_id' => $second->id, 'occurrences' => 1]);
+        DB::table('seo_items')->where('id', $first->id)->update(['links_out' => 1]);
+        $this->seo->runJob('index-site');
+
+        $this->signIn($this->editor);
+        $this->get(route('plugins.area.show', ['code' => 'seo', 'page' => 'audit']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->loadDeferredProps('block_problems', fn (Assert $reload) => $reload
+                ->where('block_problems.total', 1)
+                ->where('block_problems.rows.0.id', $poor->id)
+                ->where('block_problems.rows.0.cells.problems.value', fn (string $problems): bool => ! str_contains($problems, 'Checked once published'))));
+    }
 }
